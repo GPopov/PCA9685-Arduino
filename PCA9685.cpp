@@ -155,7 +155,7 @@ void PCA9685::setChannelOn(int channel) {
 #endif
 
     writeChannelBegin(channel);
-    writeChannelPWM(0, PCA9685_PWM_FULL);
+    writeChannelPWM(PCA9685_PWM_FULL, 0);
     writeChannelEnd();
 }
 
@@ -167,7 +167,7 @@ void PCA9685::setChannelOff(int channel) {
 #endif
 
     writeChannelBegin(channel);
-    writeChannelPWM(PCA9685_PWM_FULL, 0);
+    writeChannelPWM(0, PCA9685_PWM_FULL);
     writeChannelEnd();
 }
 
@@ -280,9 +280,9 @@ uint16_t PCA9685::getChannelPWM(int channel) {
 #endif
 
     uint16_t retVal;
-    if (phaseBegin == PCA9685_PWM_FULL && phaseEnd == 0)
+    if (phaseBegin == 0 && phaseEnd == PCA9685_PWM_FULL)
         retVal = 0;
-    else if (phaseBegin == 0 && phaseEnd == PCA9685_PWM_FULL)
+    else if (phaseBegin == PCA9685_PWM_FULL && phaseEnd == 0)
         retVal = PCA9685_PWM_FULL;
     else if (phaseBegin <= phaseEnd)
         retVal = phaseEnd - phaseBegin;
@@ -456,12 +456,12 @@ void PCA9685::checkForErrors() {
 
 void PCA9685::getPhaseCycle(int channel, uint16_t pwmAmount, uint16_t *phaseBegin, uint16_t *phaseEnd) {
     if (pwmAmount == 0) {
-        *phaseBegin = PCA9685_PWM_FULL;
-        *phaseEnd = 0;
-    }
-    else if (pwmAmount >= PCA9685_PWM_FULL - 1) {
         *phaseBegin = 0;
         *phaseEnd = PCA9685_PWM_FULL;
+    }
+    else if (pwmAmount >= PCA9685_PWM_FULL - 1) {
+        *phaseBegin = PCA9685_PWM_FULL;
+        *phaseEnd = 0;
     }
     else if (_phaseBalancer == PCA9685_PhaseBalancer_Linear) {
         // Distribute high phase area over entire phase range to balance load.
@@ -812,7 +812,7 @@ uint16_t PCA9685_ServoEvaluator::pwmForAngle(float angle) {
             retVal = _coeff[4] + (_coeff[5] * angle) + (_coeff[6] * angle * angle) + (_coeff[7] * angle * angle * angle);
         }
     }
-    
+
     return (uint16_t)constrain((int)roundf(retVal), 0, PCA9685_PWM_FULL);
 };
 
