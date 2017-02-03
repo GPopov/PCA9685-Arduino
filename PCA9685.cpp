@@ -190,7 +190,7 @@ void PCA9685::setChannelPWM(int channel, uint16_t pwmAmount) {
 
 void PCA9685::setChannelsPWM(int begChannel, int numChannels, const uint16_t *pwmAmounts) {
     if (begChannel < 0 || begChannel > 15 || numChannels < 0) return;
-    if (begChannel + numChannels > 15) numChannels -= (begChannel + numChannels) - 15;
+    if (begChannel + numChannels > 16) numChannels -= (begChannel + numChannels) - 16;
 
 #ifdef PCA9685_ENABLE_DEBUG_OUTPUT
     Serial.print("PCA9685::setChannelsPWM numChannels: ");
